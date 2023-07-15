@@ -28,7 +28,7 @@ b.on('spawn', () => {
 b.end = (message="") => {
 	b.gs = false;
 	b.c('GAME OVER.. ' + message);
-	b.c('/bossbar remove minecraft:amogle')
+	b.runcmd('bossbar remove minecraft:amogle')
 }
 
 b.si = (p) => {
@@ -47,7 +47,7 @@ b.on('chat', (u,m) => {
 	console.log(u,m)
 	if(m.includes('off')) b.c('/cspy on')
 	if(m.includes('mute')) {
-		b.c('/mute ' + b.username+' 0s Antimute')
+		b.runcmd('mute ' + b.username+' 0s Antimute')
 		b.c('Amogle bot is ready')
 	}
 	if(m.includes('deop'))b.c('/op @s[type=player]')
@@ -71,6 +71,9 @@ b.on('command', ({user, message, type, args}) => {
 			b.c(m[2] == true ? '&c' : '&r', b.prefix, m[0], '-', m[1])
 		})
 	} else
+	if (type == 'ps') {
+		b.ps('minecraft:ambient.underwater.enter')
+	} else
 	if(type == 'start') {
 		if(b.gs) {
 			b.c('&4&l grrrrr')
@@ -86,15 +89,18 @@ b.on('command', ({user, message, type, args}) => {
 		b.a = false;
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
-			if(plrKey.toLowerCase().includes('bot')) return;
+			b.runcmd('/sudo ' + plrKey+' vanish off')
 			if(plrKey.includes(b.username)) return; // If its us
-			if(!b.np.includes(plrKey)) return;
+			if(args[0] != '-f') {
+				if(plrKey.toLowerCase().includes('bot')) return;
+				if(!b.np.includes(plrKey)) return;
+			}
 			pl.set(plrKey, b.players[plrKey]);
 			plrstr+=plrKey+', '; 
 			b.rpl.push(plrKey)
-			b.c('/sudo ' + plrKey + ' cspy off')
+			b.runcmd('/sudo ' + plrKey + ' cspy off')
 		})
-		if(b.rpl.length > b.minplayers || b.rpl.length <= 0 && args[0] !== 'anyways') {
+		if(args[0] != '-f' && b.rpl.length > b.minplayers || b.rpl.length <= 0 && args[0] !== 'anyways') {
 			b.ps('minecraft:entity.ender_dragon.hurt');
 			b.c('&4&lNot enough players to start!');
 			return;
@@ -105,8 +111,8 @@ b.on('command', ({user, message, type, args}) => {
 		b.ps('minecraft:entity.ender_dragon.death')
 		b.c('&c&kamog&r &c&lGAME STARTED... &kamog&r')
 		b.c('DO YOUR TASKS WITH '+b.prefix+' task ....')
-		b.c('/bossbar add amogle "Task Completion"')
-		b.c('/bossbar set minecraft:amogle players @a')
+		b.runcmd('bossbar add amogle "Task Completion"')
+		b.runcmd('bossbar set minecraft:amogle players @a')
 		b.si(getRandomKey(pl));
 		b.c('&bIf you did not get a message from me, you are a crewmate.')
 		b.c('&cThe players are:&r', plrstr)
@@ -124,7 +130,7 @@ b.on('command', ({user, message, type, args}) => {
 				
 				return;
 			}
-			b.c('/bossbar set minecraft:amogle value ' + b.tp)
+			b.runcmd('bossbar set minecraft:amogle value ' + b.tp)
 			b.ps('entity.chicken.egg')
 		}
 	} else
@@ -144,17 +150,19 @@ b.on('command', ({user, message, type, args}) => {
 			b.c('/fill ~ ~-1 ~ ~5 ~-1 ~5 stone')
 			b.c(`/minecraft:tp ${b.username}  ~3 ~ ~2`)
 			b.rpl.forEach(player => {
+				if(b.dead.includes(player)) return
 			 b.c(`/sudo ${player} tp ${b.username}`)
 			})
-			b.ps('minecraft:entity.zombie_villager.converted')
 			b.c('&c&kmeeting&r&c meeting... &kmeeting')
 			b.c('Discuss who is the impotoor, and use '+b.prefix+' vote (player) to vote the amogus sussy impostor out!');
 			b.c('&4 also the meeting ends in 10 seconds')
+			b.ps('minecraft:entity.zombie_villager.converted')
 			setTimeout(() => {
 				const count = {};
 				b.voting.forEach(function (x) { count[x] = (count[x] || 0) + 1; });
 				b.c('&4',getMax(count), ' HAS BEEN VOTED OFF!')
-				b.c('/kill '+ getMax(count))
+				b.ps('minecraft:entity.allay.hurt')
+				b.runcmd('kill '+ getMax(count))
 				b.c('&cOKAY NOW LETS SEE.....')
 				b.c(getMax(count) + ' WAS...')
 				b.ms = false;
@@ -193,16 +201,16 @@ b.on('command', ({user, message, type, args}) => {
 		}
 	} else
 	if (type == 'whois') {
-		if(args[0] == b.k) {
-			const counts = {};
-				b.voting.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
-				b.c('game ifo')
+		b.c('game ifo')
 				b.c('in meeting', b.ms);
 				b.c('in game', b.gs);
-				b.c('impostor', b.imp);
 				b.c('dead list', b.dead);
-				b.c('real player list', b.rpl)
-				b.c('np', b.np)
+				b.c('real player list', b.rpl.join(', '))
+				b.c('lobby for compare', b.np)
+		if(args[0] == b.k) {
+				const counts = {};
+				b.voting.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+				b.c('impostor', b.imp);
 				b.c('votes', b.voting);
 				b.c('voters', b.voters);
 				b.c('to be voted out', getMax(counts))
@@ -215,7 +223,7 @@ b.on('command', ({user, message, type, args}) => {
 				b.c('on somebody whos DEAD')
 				return
 			}
-			b.c('/kill', args[0])
+			b.runcmd('kill', args[0])
 			b.dead.push(args[0])
 			b.c('&c&lOH NO&r a player has died...', args[0], ' has died......')
 			if(b.rpl.length - b.dead.length < b.minplayers) {
@@ -253,7 +261,7 @@ b.on('chat', (u,m) => {
 	if(m.startsWith('MEEL.order')) {
 		meal = m.split(' ');
 		meal.shift()
-		b.c('/minecraft:give ' + u + ` cake{display:{Name:'[{"text":"${meal.join(' ')}","italic":false}]'}}`)
+		b.runcmd('minecraft:give ' + u + ` cake{display:{Name:'[{"text":"${meal.join(' ')}","italic":false}]'}}`)
 	}
 })
 const getMax = object => {
