@@ -53,6 +53,7 @@ b.on('command', ({user, message, type, args}) => {
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
+			if(plrKey.includes(b.username)) return; // If its us
 			pl.set(plrKey, b.players[plrKey]);
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
