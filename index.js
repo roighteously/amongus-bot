@@ -121,6 +121,9 @@ b.on('command', ({user, message, type, args}) => {
 			b.ms = true;
 			b.voters = [];
 			b.voting = [];
+			b.c('/minecraft:tp ' + b.username + `${generate(3)} 77 ${generate(3)}`)
+			b.c('/fill ~ ~-1 ~ ~5 ~-1 ~5 stone')
+			b.c('/minecraft:tp ' + b.username + ' ~3 ~ ~2')
 			b.ps('minecraft:entity.zombie_villager.converted')
 			b.c('&c&kmeeting&r&c meeting... &kmeeting')
 			b.c('Discuss who is the impotoor, and use '+b.prefix+' vote (player) to vote the amogus sussy impostor out!');
@@ -231,6 +234,20 @@ const getMax = object => {
 function getRandomKey(collection) {
 	let keys = Array.from(collection.keys());
 	return keys[Math.floor(Math.random() * keys.length)];
+}
+
+function generate(n) {
+	var add = 1, max = 12 - add;   // 12 is the min safe number Math.random() can generate without it starting to pad the end with zeros.   
+	
+	if ( n > max ) {
+					return generate(max) + generate(n - max);
+	}
+	
+	max        = Math.pow(10, n+add);
+	var min    = max/10; // Math.pow(10, n) basically
+	var number = Math.floor( Math.random() * (max - min + 1) ) + min;
+	
+	return ("" + number).substring(add); 
 }
 
 b.on('kicked', (r) => console.log(r))
