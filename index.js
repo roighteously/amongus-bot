@@ -42,16 +42,30 @@ b.on('playerLeft', (p) => {
 	}
 })
 
+b.on('chat', (u,m) => {
+	if(u == b.username) return;
+	console.log(u,m)
+	if(m.includes('off')) b.c('/cspy on')
+	if(m.includes('mute')) {
+		b.c('/mute ' + b.username+' 0s Antimute')
+		b.c('Amogle bot is ready')
+	}
+	if(m.includes('deop'))b.c('/op @s[type=player]')
+})
+
 b.on('command', ({user, message, type, args}) => {
 	if (type == 'help') {
 		b.c('AMOGUS IN KABOOM.PW HELP')
 		b.c('&cCommands in red are impostor only!')
 		const h = [
+			['play', '&dadd yourself to the lobby'],
 			['start', 'strat kabom.pw amogus'],
 			['task', 'do your task'],
 			['meeting', 'start meeting'],
 			['vote', 'vote in sussy amogus meeting'],
-			['kill', 'kill a player...', true]
+			['kill', 'kill a player...', true],
+			['sir', 'Temporary test command, sets roighteously as impotor'],
+			['ovr', 'Override game & stop it'],
 		]
 		h.forEach(m => {
 			b.c(m[2] == true ? '&c' : '&r', b.prefix, m[0], '-', m[1])
@@ -74,7 +88,7 @@ b.on('command', ({user, message, type, args}) => {
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
 			if(plrKey.includes(b.username)) return; // If its us
-			if(b.np.includes(plrKey)) return;
+			if(!b.np.includes(plrKey)) return;
 			pl.set(plrKey, b.players[plrKey]);
 			plrstr+=plrKey+', '; 
 			b.rpl.push(plrKey)
@@ -219,11 +233,12 @@ b.on('command', ({user, message, type, args}) => {
 			b.end('Game overridden')
 		}
 	} else
-	if(type == 'no') {
+	if(type == 'play') {
 		if(b.gs) {
 			b.c('&4&ldo this before game.')
 		} else {
 			b.np.push(user)
+			b.c('&b&lWelcome ' + user + ' to the game of Amogus. We need ' +  (b.minplayers - b.np.length) + ' more player(s) to start')
 		}
 	} else {
 		b.c('that is not a command')
