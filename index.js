@@ -15,6 +15,7 @@ b.a = false;
 b.k = "zzz:rofl:"
 b.gs = false;
 b.ms = false;
+b.minplayers = 1;
 b.prefix = 'amogle'
 
 b.on('spawn', () => {
@@ -35,6 +36,13 @@ b.si = (p) => {
 }
 
 b.on('command', ({user, message, type, args}) => {
+	if(b.gs == true) {
+		// If theres a game, make sure there's enough people to keep playing!
+		if(b.rpl.length - b.dead.length > b.minplayers) {
+			b.c('&4&lToo little people to keep playing!')
+			b.end('Not enough players, impostor was ' + b.imp)
+		}
+	}
 	if (type == 'help') {
 		b.c('AMOGUS IN KABOOM.PW HELP')
 		b.c('&cCommands in red are impostor only!')
@@ -71,7 +79,7 @@ b.on('command', ({user, message, type, args}) => {
 			b.rpl.push(plrKey)
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
-		if(b.rpl.length > 1 && args[0] !== 'anyways') {
+		if(b.rpl.length > b.minplayers && args[0] !== 'anyways') {
 			b.ps('minecraft:entity.ender_dragon.hurt');
 			b.c('&4&lNot enough players to start!');
 			return;
