@@ -139,6 +139,8 @@ b.on('command', ({user, message, type, args}) => {
 			b.voters = [];
 			b.voting = [];
 			b.c(`/minecraft:tp ${b.username} ${generate(3)} 77 ${generate(3)}`)
+			b.c('/top')
+			b.c('/up 6')
 			b.c('/fill ~ ~-1 ~ ~5 ~-1 ~5 stone')
 			b.c(`/minecraft:tp ${b.username}  ~3 ~ ~2`)
 			b.rpl.forEach(player => {
