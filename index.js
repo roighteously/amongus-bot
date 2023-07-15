@@ -35,6 +35,12 @@ b.si = (p) => {
 	b.c('/w ' + b.imp + ' You are the impostor. Do ' + b.prefix+' help to see what you can do, in red.')
 }
 
+b.on('playerLeft', (p) => {
+	if(b.imp == p.username) {
+		b.end('&4&lTHE IMPOSTOR HAS LEFT :(')
+	}
+})
+
 b.on('command', ({user, message, type, args}) => {
 	if (type == 'help') {
 		b.c('AMOGUS IN KABOOM.PW HELP')
