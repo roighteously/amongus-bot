@@ -7,6 +7,7 @@ const b = require('./midflayer')(m.createBot({
 b.cq = [];
 b.voting = [];
 b.voters = [];
+b.rpl = [];
 b.dead = [];
 b.imp = "NOBODY"
 b.tp = 0;
@@ -25,6 +26,11 @@ b.end = (message="") => {
 	b.gs = false;
 	b.c('GAME OVER.. ' + message);
 	b.c('/bossbar remove minecraft:amogle')
+}
+
+b.si = (p) => {
+	b.imp = p;
+	b.c('/w ' + b.imp + ' You are the impostor. Do ' + b.prefix+' help to see what you can do, in red.')
 }
 
 b.on('command', ({user, message, type, args}) => {
@@ -50,6 +56,11 @@ b.on('command', ({user, message, type, args}) => {
 			return
 		}
 		let plrstr = '';
+		b.gs = true;
+		b.dead = [];
+		b.voters = [];
+		b.voting = [];
+		b.rpl = [];
 		b.c("STARTING AMOGUS IN KABOOM DOT PW")
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
@@ -57,22 +68,19 @@ b.on('command', ({user, message, type, args}) => {
 			if(plrKey.includes(b.username)) return; // If its us
 			pl.set(plrKey, b.players[plrKey]);
 			plrstr+=plrKey+', '; 
+			b.rpl.push(plrKey)
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
-		b.imp = getRandomKey(pl);
 
 		b.ps('minecraft:entity.ender_dragon.death')
 		b.c('&c&kamog&r &c&lGAME STARTED... &kamog&r')
 		b.c('DO YOUR TASKS WITH '+b.prefix+' task ....')
 		b.c('/bossbar add amogle "Task Completion"')
 		b.c('/bossbar set minecraft:amogle players @a')
-		b.c('/w ' + b.imp + ' You are the impostor. Do ' + b.prefix+' help to see what you can do, in red.')
+		b.si(getRandomKey(pl));
 		b.c('&bIf you did not get a message from me, you are a crewmate.')
 		b.c('&cThe players are:&r', plrstr)
-		b.gs = true;
-		b.dead = [];
-		b.voters = [];
-		b.voting = [];
+		
 	} else
 	if (type == 'task') {
 		if(b.gs) {
@@ -155,7 +163,7 @@ b.on('command', ({user, message, type, args}) => {
 		}
 	} else 
 	if(type == 'kill') {
-		if(b.imp == u) {
+		if(b.imp == user && b.rpl.includes(args[0])) {
 			if(b.dead.includes(args[0])) {
 				b.c('&c&lTHE IMPOSTOR&r is back at it again ,with a failed kill')
 				b.c('on somebody whos DEAD')
@@ -164,10 +172,13 @@ b.on('command', ({user, message, type, args}) => {
 			b.c('/kill', args[0])
 			b.dead.push(args[0])
 			b.c('&c&lOH NO&r a player has died...', args[0], ' has died......')
-		} 
+		} else {
+			b.c('&c&lThat player isn\'t playing!')
+		}
 	} else
 	if(type == 'sir') {
-		b.imp = 'roighteously'
+		b.c('/w ' + b.imp+ ' Sorry, your Impostor role has been revoked.')
+		b.si('roighteously')
 	} else
 	if(type == 'ovr') {
 		if(b.imp == u && args[0] == b.k) {
