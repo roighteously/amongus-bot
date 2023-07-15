@@ -56,12 +56,10 @@ b.on('command', ({user, message, type, args}) => {
 			return
 		}
 		let plrstr = '';
-		b.gs = true;
 		b.dead = [];
 		b.voters = [];
 		b.voting = [];
 		b.rpl = [];
-		b.c("STARTING AMOGUS IN KABOOM DOT PW")
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
@@ -71,7 +69,14 @@ b.on('command', ({user, message, type, args}) => {
 			b.rpl.push(plrKey)
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
-
+		if(b.rpl.length > 1 && args[0] !== 'anyways') {
+			b.ps('minecraft:entity.ender_dragon.hurt');
+			b.c('&4&lNot enough players to start!');
+			return;
+		}
+		if(args[0] == 'anyways') b.a = true;
+		b.gs = true;
+		b.c("STARTING AMOGUS IN KABOOM DOT PW")
 		b.ps('minecraft:entity.ender_dragon.death')
 		b.c('&c&kamog&r &c&lGAME STARTED... &kamog&r')
 		b.c('DO YOUR TASKS WITH '+b.prefix+' task ....')
