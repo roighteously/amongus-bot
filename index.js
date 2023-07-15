@@ -15,7 +15,7 @@ b.a = false;
 b.k = "zzz:rofl:"
 b.gs = false;
 b.ms = false;
-b.minplayers = 1;
+b.minplayers = 2;
 b.prefix = 'amogle'
 
 b.on('spawn', () => {
@@ -36,13 +36,6 @@ b.si = (p) => {
 }
 
 b.on('command', ({user, message, type, args}) => {
-	if(b.gs == true) {
-		// If theres a game, make sure there's enough people to keep playing!
-		if(b.rpl.length - b.dead.length > b.minplayers) {
-			b.c('&4&lToo little people to keep playing!')
-			b.end('Not enough players, impostor was ' + b.imp)
-		}
-	}
 	if (type == 'help') {
 		b.c('AMOGUS IN KABOOM.PW HELP')
 		b.c('&cCommands in red are impostor only!')
@@ -79,7 +72,7 @@ b.on('command', ({user, message, type, args}) => {
 			b.rpl.push(plrKey)
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
-		if(b.rpl.length > b.minplayers && args[0] !== 'anyways') {
+		if(b.rpl.length < b.minplayers && args[0] !== 'anyways') {
 			b.ps('minecraft:entity.ender_dragon.hurt');
 			b.c('&4&lNot enough players to start!');
 			return;
@@ -141,6 +134,11 @@ b.on('command', ({user, message, type, args}) => {
 				} else {
 					b.c('NOT THE IMPOTOR... :(')
 					b.dead.push(getMax(count));
+					if(b.rpl.length - b.dead.length < b.minplayers) {
+						b.ps('minecraft:entity.ender_dragon.hurt');
+						b.c('&4&lToo little people to keep playing!')
+						b.end('Not enough players, impostor was ' + b.imp)
+					}
 				}
 				
 			},10000)
@@ -172,6 +170,7 @@ b.on('command', ({user, message, type, args}) => {
 				b.c('in game', b.gs);
 				b.c('impostor', b.imp);
 				b.c('dead list', b.dead);
+				b.c('real player list', b.rpl)
 				b.c('votes', b.voting);
 				b.c('voters', b.voters);
 				b.c('to be voted out', getMax(counts))
@@ -187,6 +186,11 @@ b.on('command', ({user, message, type, args}) => {
 			b.c('/kill', args[0])
 			b.dead.push(args[0])
 			b.c('&c&lOH NO&r a player has died...', args[0], ' has died......')
+			if(b.rpl.length - b.dead.length < b.minplayers) {
+				b.ps('minecraft:entity.ender_dragon.hurt');
+				b.c('&4&lToo little people to keep playing!')
+				b.end('Not enough players, impostor was ' + b.imp)
+			}
 		} else {
 			b.c('&c&lThat player isn\'t playing!')
 		}
