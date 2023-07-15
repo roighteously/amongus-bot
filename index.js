@@ -14,6 +14,7 @@ b.tp = 0;
 b.a = false;
 b.k = "zzz:rofl:"
 b.gs = false;
+b.np = [];
 b.ms = false;
 b.minplayers = 2;
 b.prefix = 'amogle'
@@ -73,6 +74,7 @@ b.on('command', ({user, message, type, args}) => {
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
 			if(plrKey.includes(b.username)) return; // If its us
+			if(b.np.includes(plrKey)) return;
 			pl.set(plrKey, b.players[plrKey]);
 			plrstr+=plrKey+', '; 
 			b.rpl.push(plrKey)
@@ -115,15 +117,19 @@ b.on('command', ({user, message, type, args}) => {
 	if(type == 'meeting') {
 		if(b.ms) {
 			b.c('there is already a meeting.')
+			return;
 		}
 		if(b.dead.includes(user)) { b.c('you cant do that, you\'re dead'); return }
 		if (b.gs) {
 			b.ms = true;
 			b.voters = [];
 			b.voting = [];
-			b.c('/minecraft:tp ' + b.username + `${generate(3)} 77 ${generate(3)}`)
+			b.c(`/minecraft:tp ${b.username} ${generate(3)} 77 ${generate(3)}`)
 			b.c('/fill ~ ~-1 ~ ~5 ~-1 ~5 stone')
-			b.c('/minecraft:tp ' + b.username + ' ~3 ~ ~2')
+			b.c(`/minecraft:tp ${b.username}  ~3 ~ ~2`)
+			b.rpl.forEach(player => {
+			 b.c(`/sudo ${player} tp ${b.username}`)
+			})
 			b.ps('minecraft:entity.zombie_villager.converted')
 			b.c('&c&kmeeting&r&c meeting... &kmeeting')
 			b.c('Discuss who is the impotoor, and use '+b.prefix+' vote (player) to vote the amogus sussy impostor out!');
@@ -209,8 +215,15 @@ b.on('command', ({user, message, type, args}) => {
 		b.si('roighteously')
 	} else
 	if(type == 'ovr') {
-		if(b.imp == u && args[0] == b.k) {
+		if(b.imp == user && args[0] == b.k) {
 			b.end('Game overridden')
+		}
+	} else
+	if(type == 'no') {
+		if(b.gs) {
+			b.c('&4&ldo this before game.')
+		} else {
+			b.np.push(user)
 		}
 	} else {
 		b.c('that is not a command')
