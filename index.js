@@ -11,6 +11,7 @@ b.rpl = [];
 b.dead = [];
 b.imp = "NOBODY"
 b.tp = 0;
+b.a = false;
 b.k = "zzz:rofl:"
 b.gs = false;
 b.ms = false;
@@ -60,6 +61,7 @@ b.on('command', ({user, message, type, args}) => {
 		b.voters = [];
 		b.voting = [];
 		b.rpl = [];
+		b.a = false;
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
