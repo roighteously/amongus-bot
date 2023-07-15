@@ -49,12 +49,14 @@ b.on('command', ({user, message, type, args}) => {
 			b.c('&4&l grrrrr')
 			return
 		}
+		let plrstr = '';
 		b.c("STARTING AMOGUS IN KABOOM DOT PW")
 		const pl = new Map();
 		Object.keys(b.players).forEach(plrKey => {
 			if(plrKey.toLowerCase().includes('bot')) return;
 			if(plrKey.includes(b.username)) return; // If its us
 			pl.set(plrKey, b.players[plrKey]);
+			plrstr+=plrKey+', '; 
 			b.c('/sudo ' + plrKey + ' cspy off')
 		})
 		b.imp = getRandomKey(pl);
@@ -66,6 +68,7 @@ b.on('command', ({user, message, type, args}) => {
 		b.c('/bossbar set minecraft:amogle players @a')
 		b.c('/w ' + b.imp + ' You are the impostor. Do ' + b.prefix+' help to see what you can do, in red.')
 		b.c('&bIf you did not get a message from me, you are a crewmate.')
+		b.c('&cThe players are:&r', plrstr)
 		b.gs = true;
 		b.dead = [];
 		b.voters = [];
